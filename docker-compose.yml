@@ -13,4 +13,4 @@ services:
 networks:
   #nginx-internal:
   nginx-network:
-    external: false
+    external: true
