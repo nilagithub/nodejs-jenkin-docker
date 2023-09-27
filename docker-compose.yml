@@ -1,0 +1,16 @@
+version: "3.3"
+
+services:
+  angular_nginx:
+    image: nexrpa/node-app:latest
+    container_name: node-app
+    restart: always
+    ports:
+        - "3001:3000"
+    networks:
+      - nginx-network
+    
+networks:
+  #nginx-internal:
+  nginx-network:
+    external: true

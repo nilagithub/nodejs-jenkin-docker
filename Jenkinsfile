@@ -64,6 +64,37 @@ pipeline {
                 }
             }
         }
+		
+		stage('Delete old Stack') {
+		  steps {
+			script {
+
+			  // Get all stacks
+			  String existingStackId = ""
+			  if("true") {
+				def stackResponse = httpRequest httpMode: 'GET', ignoreSslErrors: true, url: "http://admin.smarthought.in/api/stacks", validResponseCodes: '200', consoleLogResponseBody: true, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
+				def stacks = new groovy.json.JsonSlurper().parseText(stackResponse.getContent())
+				
+				stacks.each { stack ->
+				  if(stack.Name == "BOILERPLATE") {
+					existingStackId = stack.Id
+				  }
+				}
+			  }
+
+			  if(existingStackId?.trim()) {
+				// Delete the stack
+				def stackURL = """
+				  http://admin.smarthought.in/api/stacks/$existingStackId
+				"""
+				httpRequest acceptType: 'APPLICATION_JSON', validResponseCodes: '204', httpMode: 'DELETE', ignoreSslErrors: true, url: stackURL, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
+
+			  }
+
+			}
+		  }
+		}		
+		//add the new deploy stage
     }
 	post {
 		always {
