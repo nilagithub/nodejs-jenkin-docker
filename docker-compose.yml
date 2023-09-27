@@ -1,7 +1,7 @@
 version: "3.3"
 
 services:
-  angular_nginx:
+  nodeapp_service:
     image: nexrpa/node-app:latest
     container_name: node-app
     restart: always
@@ -13,4 +13,4 @@ services:
 networks:
   #nginx-internal:
   nginx-network:
-    external: true
+    external: false
