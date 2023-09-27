@@ -90,11 +90,33 @@ pipeline {
 				httpRequest acceptType: 'APPLICATION_JSON', validResponseCodes: '204', httpMode: 'DELETE', ignoreSslErrors: true, url: stackURL, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
 
 			  }
-
 			}
 		  }
 		}		
 		//add the new deploy stage
+		stage('Deploy new stack to Portainer') {
+		  steps {
+			script {
+			  
+			  def createStackJson = ""
+
+			  // Stack does not exist
+			  // Generate JSON for when the stack is created
+			  withCredentials([usernamePassword(credentialsId: 'github-nila', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
+				def swarmResponse = httpRequest acceptType: 'APPLICATION_JSON', validResponseCodes: '200', httpMode: 'GET', ignoreSslErrors: true, consoleLogResponseBody: true, url: "http://admin.smarthought.in/api/endpoints/1/docker/swarm", customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
+				def swarmInfo = new groovy.json.JsonSlurper().parseText(swarmResponse.getContent())
+
+				createStackJson = """
+				  {"Name": "BOILERPLATE", "SwarmID": "$swarmInfo.ID", "RepositoryURL": "https://github.com/$GITHUB_USERNAME/compose_files", "ComposeFilePathInRepository": "docker-compose.yml", "RepositoryAuthentication": true, "RepositoryUsername": "$GITHUB_USERNAME", "RepositoryPassword": "$GITHUB_PASSWORD"}
+				"""
+			  }
+
+			  if(createStackJson?.trim()) {
+				httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', validResponseCodes: '200', httpMode: 'POST', ignoreSslErrors: true, consoleLogResponseBody: true, requestBody: createStackJson, url: "http://admin.smarthought.in/api/stacks?method=repository&type=1&endpointId=1", customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
+			  }
+			}
+		  }
+		}
     }
 	post {
 		always {
