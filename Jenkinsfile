@@ -45,7 +45,7 @@ pipeline {
 					  def json = """
 						  {"Username": "$PORTAINER_USERNAME", "Password": "$PORTAINER_PASSWORD"}
 					  """
-					  def jwtResponse = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', validResponseCodes: '200', httpMode: 'POST', ignoreSslErrors: true, consoleLogResponseBody: true, requestBody: json, url: "https://62.72.57.97:9443/api/auth"
+					  def jwtResponse = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', validResponseCodes: '200', httpMode: 'POST', ignoreSslErrors: true, consoleLogResponseBody: true, requestBody: json, url: "http://admin.smarthought.in/api/auth"
 					  def jwtObject = new groovy.json.JsonSlurper().parseText(jwtResponse.getContent())
 					  env.JWTTOKEN = "Bearer ${jwtObject.jwt}"
 				  }
