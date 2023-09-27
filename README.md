@@ -5,6 +5,7 @@ $ wsl docker build -t my-nodeapp .
 $ docker run -d -it –rm -p [host_port]:[container_port] –name=[container_name] [image_id/image_tag]
 
 		wsl docker run -it -p 3003:3000 --name=mynodeapp my-nodeapp:latest
+		docker run -it -p 3003:3000 --name=mynodeapp nexrpa/node-app:latest
 		
 # Simple Node.js + Docker example
 
