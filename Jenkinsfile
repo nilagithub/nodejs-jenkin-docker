@@ -58,25 +58,29 @@ pipeline {
 			script {
 
 			  // Get all stacks
-			  String existingStackId = ""
+			  String stackId = ""
+			  String endPointId= ""
+			  resourceControlId = ""
 			  if("true") {
 				def stackResponse = httpRequest httpMode: 'GET', ignoreSslErrors: true, url: "http://admin.smarthought.in/api/stacks", validResponseCodes: '200', consoleLogResponseBody: true, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
 				def stacks = new groovy.json.JsonSlurper().parseText(stackResponse.getContent())
 				
 				stacks.each { stack ->
 				  if(stack.Name == "node_react_app") {
-					existingStackId = stack.Id
+					stackId = stack.Id
+					endPointId =  stack.EndpointId
+					resourceControlId = stck.ResourceControl.Id
 				  }
 				}
 			  }
 
-			  if(existingStackId?.trim()) {
+			  if(stackId?.trim()) {
 				// STOP the stack
 				def stackURL = """
-				  http://admin.smarthought.in/api/stacks/$existingStackId/stop?endpointId=2
+				  http://admin.smarthought.in/api/stacks/$stackId/stop?endpointId=$endPointId
 				"""
 				stopStackJson = """
-				  {"endpointId":2,"id":7}
+				  {"endpointId":$endPointId,"id":$resourceControlId} //2,7
 				"""
 				httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', validResponseCodes: '200', httpMode: 'POST', ignoreSslErrors: true, consoleLogResponseBody: true, requestBody: stopStackJson, url: stackURL, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
 			  }
