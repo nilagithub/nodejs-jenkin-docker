@@ -97,9 +97,10 @@ pipeline {
 				  {"endpointId":$endPointId,"id":$resourceControlId} //2,7
 				"""
 				httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', validResponseCodes: '200', httpMode: 'POST', ignoreSslErrors: true, consoleLogResponseBody: true, requestBody: stopStackJson, url: stackURL, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
+				echo "-----------Successfully Stopped-------"
 			  }
 			}
-			echo "-----------Successfully stopped-------"
+			
 		  }
 		}
         stage("Pushing Image"){
@@ -158,9 +159,10 @@ pipeline {
 				  {"endpointId":$endPointId,"id":$resourceControlId} //2,7
 				"""
 				httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', validResponseCodes: '200', httpMode: 'POST', ignoreSslErrors: true, consoleLogResponseBody: true, requestBody: startStackJson, url: stackURL, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
+				echo "-----------Successfully Started-------"
 			  }
 			}
-			echo "-----------Successfully Started-------"
+			
 		  }
 		}
     }
