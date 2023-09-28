@@ -53,7 +53,7 @@ pipeline {
 			echo "${env.JWTTOKEN}"
 			}
 		}
-		stage('STOP the Stack') {
+		stage('STOP the Stack') { // refer all api in my documentation
 		  steps {
 			script {
 
@@ -112,6 +112,55 @@ pipeline {
                 }
             }
         }
+		
+		stage('START the Stack') { // refer all api in my documentation
+		  steps {
+			script {
+
+			  // Get all stacks
+			  String stackId = ""
+			  String endPointId= ""
+			  String resourceControlId = ""
+			  String stackStatus = "";
+			  
+			  if("true") {
+				def stackResponse = httpRequest httpMode: 'GET', ignoreSslErrors: true, url: "http://admin.smarthought.in/api/stacks", validResponseCodes: '200', consoleLogResponseBody: true, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
+				def stacks = new groovy.json.JsonSlurper().parseText(stackResponse.getContent())
+				
+				stacks.each { stack ->
+				  if(stack.Name == "node_react_app") {
+					
+					stackId = stack.Id
+					endPointId =  stack.EndpointId
+					stackStatus = stack.Status
+					resourceControlId = stack.ResourceControl.Id
+										
+					echo "--------------------------"
+					echo "$stackStatus"
+					echo "$resourceControlId"
+					if(stackStatus == "2"){
+						echo "-----------stopped-------"
+					}
+					if(stackStatus == "1"){
+						echo "-----------running-------"
+					}
+				  }
+				}
+			  }
+
+			  if(stackId?.trim() && stackStatus == "2") {
+				// START the stack
+				def stackURL = """
+				  http://admin.smarthought.in/api/stacks/$resourceControlId/start?endpointId=$endPointId
+				"""
+				startStackJson = """
+				  {"endpointId":$endPointId,"id":$resourceControlId} //2,7
+				"""
+				httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', validResponseCodes: '200', httpMode: 'POST', ignoreSslErrors: true, consoleLogResponseBody: true, requestBody: startStackJson, url: stackURL, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
+			  }
+			}
+		  }
+		}
     }
 	post {
 		always {
