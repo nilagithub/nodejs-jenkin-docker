@@ -72,9 +72,9 @@ pipeline {
 					
 					stackId = stack.Id
 					endPointId =  stack.EndpointId
+					stackStatus = stack.Status
 					resourceControlId = stack.ResourceControl.Id
-					stackStatus = stack.ResourceControl.Status
-					
+										
 					echo "--------------------------"
 					echo "$stackStatus"
 					echo "$resourceControlId"
