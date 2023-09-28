@@ -65,6 +65,36 @@ pipeline {
                 }
             }
         }
+		stage('STOP the Stack') {
+		  steps {
+			script {
+
+			  // Get all stacks
+			  String existingStackId = ""
+			  if("true") {
+				def stackResponse = httpRequest httpMode: 'GET', ignoreSslErrors: true, url: "http://admin.smarthought.in/api/stacks", validResponseCodes: '200', consoleLogResponseBody: true, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
+				def stacks = new groovy.json.JsonSlurper().parseText(stackResponse.getContent())
+				
+				stacks.each { stack ->
+				  if(stack.Name == "node_react_app") {
+					existingStackId = stack.Id
+				  }
+				}
+			  }
+
+			  if(existingStackId?.trim()) {
+				// STOP the stack
+				def stackURL = """
+				  http://admin.smarthought.in/api/stacks/$existingStackId/stop?endpointId=2
+				"""
+				stopStackJson = """
+				  {"endpointId":2,"id":7}
+				"""
+				httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', validResponseCodes: '200', httpMode: 'POST', ignoreSslErrors: true, consoleLogResponseBody: true, requestBody: stopStackJson, url: stackURL, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
+			  }
+			}
+		  }
+		}	
 		// failed
 		stage('Delete old Stack') {
 		  steps {
