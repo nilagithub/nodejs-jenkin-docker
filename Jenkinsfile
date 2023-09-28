@@ -69,7 +69,7 @@ pipeline {
 				  if(stack.Name == "node_react_app") {
 					stackId = stack.Id
 					endPointId =  stack.EndpointId
-					resourceControlId = stck.ResourceControl.Id
+					resourceControlId = stack.ResourceControl.Id
 				  }
 				}
 			  }
