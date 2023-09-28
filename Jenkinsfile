@@ -60,16 +60,30 @@ pipeline {
 			  // Get all stacks
 			  String stackId = ""
 			  String endPointId= ""
-			  resourceControlId = ""
+			  String resourceControlId = ""
+			  String stackStatus = "";
+			  
 			  if("true") {
 				def stackResponse = httpRequest httpMode: 'GET', ignoreSslErrors: true, url: "http://admin.smarthought.in/api/stacks", validResponseCodes: '200', consoleLogResponseBody: true, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
 				def stacks = new groovy.json.JsonSlurper().parseText(stackResponse.getContent())
 				
 				stacks.each { stack ->
 				  if(stack.Name == "node_react_app") {
+					
 					stackId = stack.Id
 					endPointId =  stack.EndpointId
 					resourceControlId = stack.ResourceControl.Id
+					stackStatus = stack.ResourceControl.Status
+					
+					echo "--------------------------"
+					echo "$stackStatus"
+					echo "$resourceControlId"
+					if(stackStatus == 2){
+						echo "-----------stopped-------"
+					}
+					if(stackStatus == 1){
+						echo "-----------running-------"
+					}
 				  }
 				}
 			  }
