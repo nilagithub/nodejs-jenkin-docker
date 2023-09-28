@@ -88,7 +88,7 @@ pipeline {
 				}
 			  }
 
-			  if(stackId?.trim()) {
+			  if(stackId?.trim() && stackStatus == "1") {
 				// STOP the stack
 				def stackURL = """
 				  http://admin.smarthought.in/api/stacks/$stackId/stop?endpointId=$endPointId
