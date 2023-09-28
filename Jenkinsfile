@@ -99,6 +99,7 @@ pipeline {
 				httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', validResponseCodes: '200', httpMode: 'POST', ignoreSslErrors: true, consoleLogResponseBody: true, requestBody: stopStackJson, url: stackURL, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
 			  }
 			}
+			echo "-----------Successfully stopped-------"
 		  }
 		}
         stage("Pushing Image"){
@@ -151,7 +152,7 @@ pipeline {
 			  if(stackId?.trim() && stackStatus == "2") {
 				// START the stack
 				def stackURL = """
-				  http://admin.smarthought.in/api/stacks/$resourceControlId/start?endpointId=$endPointId
+				  http://admin.smarthought.in/api/stacks/$stackId/start?endpointId=$endPointId
 				"""
 				startStackJson = """
 				  {"endpointId":$endPointId,"id":$resourceControlId} //2,7
@@ -159,6 +160,7 @@ pipeline {
 				httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', validResponseCodes: '200', httpMode: 'POST', ignoreSslErrors: true, consoleLogResponseBody: true, requestBody: startStackJson, url: stackURL, customHeaders:[[name:"Authorization", value: env.JWTTOKEN ], [name: "cache-control", value: "no-cache"]]
 			  }
 			}
+			echo "-----------Successfully Started-------"
 		  }
 		}
     }
