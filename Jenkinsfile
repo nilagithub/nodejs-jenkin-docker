@@ -78,10 +78,10 @@ pipeline {
 					echo "--------------------------"
 					echo "$stackStatus"
 					echo "$resourceControlId"
-					if($stackStatus == '2'){
+					if($stackStatus == "2"){
 						echo "-----------stopped-------"
 					}
-					if($stackStatus == '1'){
+					if($stackStatus == "1"){
 						echo "-----------running-------"
 					}
 				  }
